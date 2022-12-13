@@ -33,6 +33,7 @@ namespace GSC_Lr4
         SolidBrush myBrush = new SolidBrush(Color.Black);
         Color color = Color.Gray;
         int rotateCount = 1;
+        int scaleCount = 1;
         PointF ReflectPoint=PointF.Empty;
         PointF crossHair;
         IShape TMO;
@@ -63,8 +64,8 @@ namespace GSC_Lr4
                     //selected.Add(selectedShape);
                 }
                 //if (selectedShape.CheckScale(e)) { scaling = true; prevPoint = e.Location; }
-                        base.OnMouseDown(e);
-                pictureBox1.Invalidate();
+                //base.OnMouseDown(e);
+                //pictureBox1.Invalidate();
                 
             }
             if (Operation == 7)
@@ -103,7 +104,7 @@ namespace GSC_Lr4
         }
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
-            if (moving) {  moving = false; Operation = 1; }   
+            if (moving) {  moving = false; Operation = 1; }
             //if (scaling) { scaling = false; }
             base.OnMouseUp(e);
             //selectedShape = null;
@@ -186,14 +187,23 @@ namespace GSC_Lr4
                 pictureBox1.Invalidate();
             }
             if (Operation == 8 )
-            {   // f1.Intersect(Selected[1].GetPath());  // симметрическая разность 
+            {
                 Region f1 = new Region(Selected[0].GetPath());
-                Region f2 = new Region(Selected[1].GetPath());     // f1 exc f2 + backcolor+ e f2 = f1-f1
-                                                                   // f1 inters f2 + backcolor + e f1 = xor 
-                                                                   // f1.Exclude(f2);
-                f1.Intersect(Selected[1].GetPath());
-                using (var tmoBrush = new SolidBrush(this.BackColor))
-                    e.Graphics.FillRegion(tmoBrush, f1);
+                Region f2 = new Region(Selected[1].GetPath());
+                switch (TMOIndex)
+                {
+                    case 1: //xor
+                        f1.Intersect(Selected[1].GetPath());
+                        using (var tmoBrush = new SolidBrush(this.BackColor))
+                            e.Graphics.FillRegion(tmoBrush, f1);
+                        break;
+                    case 2: //subtract
+                        //f1.Complement(f2);
+                        f1.Complement(f2);
+                        using (var tmoBrush = new SolidBrush(Color.Black))
+                            e.Graphics.FillRegion(tmoBrush, f1);
+                        break;
+                }
 
             }
 
@@ -201,8 +211,6 @@ namespace GSC_Lr4
 
         private void RotateBtn_Click(object sender, EventArgs e)
         {
-            //selectedShape.Rotate();
-            //pictureBox1.Invalidate();
             Operation = 3; //rotate
             selectedShape.RotationAngle = 45*rotateCount;
             rotateCount++;
@@ -218,22 +226,21 @@ namespace GSC_Lr4
         private void ReflectBtn_Click(object sender, EventArgs e)
         {
             Operation = 5; //reflect
-            if (ReflectPoint != new PointF(0,0))
+            if (ReflectPoint != PointF.Empty)
             {
                 selectedShape.ReflectionPoint = ReflectPoint;
-                pictureBox1.Invalidate();
+                selectedShape.Reflect(ReflectPoint);
             }
-            pictureBox1.Invalidate();//hbu
-            //selectedShape.ReflectionPoint = ReflectPoint;
+            pictureBox1.Invalidate();
         }
 
         private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
         {
-            if (Operation == 5)
+            if (Operation == 5)  // reflect 
             {
                 ReflectPoint = e.Location;
             }
-            if (Operation == 6)
+            if (Operation == 6)  //scale
             {
                 crossHair = e.Location;
             }
@@ -252,13 +259,6 @@ namespace GSC_Lr4
         }
 
 
-        private void Symm()
-        {
-            Region f1 = new Region(Selected[0].GetPath());
-            f1.Xor(Selected[1].GetPath());
-        }
-
-
         private void ExecuteTMO_Click(object sender, EventArgs e)
         {
             Operation = 8;
@@ -272,6 +272,25 @@ namespace GSC_Lr4
                 Operation = 7;
             }
 
+        }
+
+        private void TMOCmbBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (TMOCmbBox.SelectedIndex)
+            {
+                case 0: TMOIndex = 1;
+                    break;
+                case 1: TMOIndex = 2;
+                    break;
+            }
+        }
+
+        private void EnlargeBtn_Click(object sender, EventArgs e)
+        {
+            selectedShape.ScalePoint = 1.2f * scaleCount;
+            pictureBox1.Invalidate();
+            scaleCount++;
+            selectedShape = null;
         }
     }
 }

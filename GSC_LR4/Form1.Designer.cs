@@ -46,6 +46,8 @@
             this.ScaleBtn = new System.Windows.Forms.Button();
             this.ExecuteTMO = new System.Windows.Forms.Button();
             this.TMO_Mode = new System.Windows.Forms.CheckBox();
+            this.EnlargeBtn = new System.Windows.Forms.Button();
+            this.MinimizeBtn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -165,13 +167,14 @@
             this.TMOCmbBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.TMOCmbBox.FormattingEnabled = true;
             this.TMOCmbBox.Items.AddRange(new object[] {
-            "Разность",
-            "Симметрическая разность"});
+            "Симметрическая разность",
+            "Разность"});
             this.TMOCmbBox.Location = new System.Drawing.Point(1522, 826);
             this.TMOCmbBox.Name = "TMOCmbBox";
             this.TMOCmbBox.Size = new System.Drawing.Size(185, 24);
             this.TMOCmbBox.TabIndex = 15;
             this.TMOCmbBox.Text = "Выбор ТМО";
+            this.TMOCmbBox.SelectedIndexChanged += new System.EventHandler(this.TMOCmbBox_SelectedIndexChanged);
             // 
             // pictureBox1
             // 
@@ -200,7 +203,7 @@
             // 
             // DeleteBtn
             // 
-            this.DeleteBtn.Location = new System.Drawing.Point(1611, 738);
+            this.DeleteBtn.Location = new System.Drawing.Point(1203, 818);
             this.DeleteBtn.Name = "DeleteBtn";
             this.DeleteBtn.Size = new System.Drawing.Size(105, 35);
             this.DeleteBtn.TabIndex = 17;
@@ -230,7 +233,7 @@
             // 
             // ExecuteTMO
             // 
-            this.ExecuteTMO.Location = new System.Drawing.Point(1612, 665);
+            this.ExecuteTMO.Location = new System.Drawing.Point(1611, 785);
             this.ExecuteTMO.Name = "ExecuteTMO";
             this.ExecuteTMO.Size = new System.Drawing.Size(136, 35);
             this.ExecuteTMO.TabIndex = 21;
@@ -249,12 +252,33 @@
             this.TMO_Mode.UseVisualStyleBackColor = true;
             this.TMO_Mode.CheckedChanged += new System.EventHandler(this.TMO_Mode_CheckedChanged);
             // 
+            // EnlargeBtn
+            // 
+            this.EnlargeBtn.Location = new System.Drawing.Point(1609, 663);
+            this.EnlargeBtn.Name = "EnlargeBtn";
+            this.EnlargeBtn.Size = new System.Drawing.Size(75, 23);
+            this.EnlargeBtn.TabIndex = 23;
+            this.EnlargeBtn.Text = "+";
+            this.EnlargeBtn.UseVisualStyleBackColor = true;
+            this.EnlargeBtn.Click += new System.EventHandler(this.EnlargeBtn_Click);
+            // 
+            // MinimizeBtn
+            // 
+            this.MinimizeBtn.Location = new System.Drawing.Point(1717, 663);
+            this.MinimizeBtn.Name = "MinimizeBtn";
+            this.MinimizeBtn.Size = new System.Drawing.Size(75, 23);
+            this.MinimizeBtn.TabIndex = 24;
+            this.MinimizeBtn.Text = "-";
+            this.MinimizeBtn.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(1840, 870);
+            this.Controls.Add(this.MinimizeBtn);
+            this.Controls.Add(this.EnlargeBtn);
             this.Controls.Add(this.TMO_Mode);
             this.Controls.Add(this.ExecuteTMO);
             this.Controls.Add(this.ScaleBtn);
@@ -296,6 +320,8 @@
         private System.Windows.Forms.Button ScaleBtn;
         private System.Windows.Forms.Button ExecuteTMO;
         private System.Windows.Forms.CheckBox TMO_Mode;
+        private System.Windows.Forms.Button EnlargeBtn;
+        private System.Windows.Forms.Button MinimizeBtn;
     }
 }
 

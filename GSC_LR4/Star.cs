@@ -19,7 +19,7 @@ namespace GSC_LR4
         public Color oColor { get; set; }
         public float RotationAngle { get; set; }
         public PointF ReflectionPoint { get; set; }
-        public PointF ScalePoint { get; set; }
+        public float ScalePoint { get; set; }
         public Star(PointF p, Color color)
         {
             center = p;
@@ -74,24 +74,41 @@ namespace GSC_LR4
                 mx.RotateAt(RotationAngle, center);
                 path.Transform(mx);
             }
-            if (ReflectionPoint != new PointF(0, 0))
+            //if (ReflectionPoint != new PointF(0, 0))
+            //{
+            //    var reflectMx = new Matrix(1, 0, 0, -1, 0, 0);
+            //    float dy = 0 - ReflectionPoint.Y;
+            //    var tr = new Matrix();
+            //    tr.Translate(0, -dy);
+            //    tr.Multiply(reflectMx);
+            //    tr.Translate(0, dy);
+            //    path.Transform(tr);
+            //}
+            if (ScalePoint != 0)
             {
-                var rf = new Matrix(1, 0, 0, -1, 0, 0);
-                float dy = 0 - ReflectionPoint.Y;
                 var tr = new Matrix();
-                tr.Translate(0, -dy);
-                tr.Multiply(rf);
-                tr.Translate(0, dy);
+                var sc = new Matrix(1, 0, 0, ScalePoint, 0, 0);
+            //    tr.Translate(center.X, center.Y);
+                tr.Multiply(sc,MatrixOrder.Append);
+               // tr.Translate(-center.X, -center.Y);
                 path.Transform(tr);
             }
             return path;
         }
-        //public bool CheckScale(MouseEventArgs p)
-        //{
-        //    if ((p.X >= Min().X - 7 && p.X <= Min().X + 7) && ((p.Y >= Min().Y - 7 && p.Y <= Min().Y + 7) || (p.Y >= Max().Y - 7 && p.Y <= Max().Y + 7))) return true;
-        //    if ((p.X >= Max().X - 7 && p.X <= Max().X + 7) && ((p.Y >= Min().Y - 7 && p.Y <= Min().Y + 7) || (p.Y >= Max().Y - 7 && p.Y <= Max().Y + 7))) return true;
-        //    return false;
-        //}
+        public void Reflect(PointF r)
+        {
+            if (ReflectionPoint.Y < center.Y) //above shape
+            {
+                center = new PointF(center.X, center.Y - 2 * (center.Y - ReflectionPoint.Y));
+                return;
+            }
+            if (ReflectionPoint.Y > center.Y) //below shape
+            {
+                center = new PointF(center.X, center.Y + 2 * (-center.Y + ReflectionPoint.Y));
+                return;
+            }
+        }
+
         public void Draw(Graphics g)
         {
             using (var path = GetPath())
