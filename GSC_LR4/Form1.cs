@@ -287,10 +287,10 @@ namespace GSC_Lr4
 
         private void EnlargeBtn_Click(object sender, EventArgs e)
         {
-            selectedShape.ScalePoint = 1.2f * scaleCount;
+            selectedShape.ScalePoint = crossHair;
             pictureBox1.Invalidate();
-            scaleCount++;
-            selectedShape = null;
+            selectedShape.ScaleFactor+=0.7f;
+           // selectedShape = null;
         }
     }
 }

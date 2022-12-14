@@ -14,7 +14,8 @@ namespace GSC_LR4
         GraphicsPath GetPath();
         float RotationAngle { get; set; }
         PointF ReflectionPoint { get; set; }
-        float ScalePoint { get; set; }
+        PointF ScalePoint { get; set; }
+        float ScaleFactor { get; set; }
         bool Selected(PointF p);
         void Draw(Graphics g);
         void Move(PointF m);

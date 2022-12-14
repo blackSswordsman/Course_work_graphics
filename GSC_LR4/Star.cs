@@ -19,7 +19,8 @@ namespace GSC_LR4
         public Color oColor { get; set; }
         public float RotationAngle { get; set; }
         public PointF ReflectionPoint { get; set; }
-        public float ScalePoint { get; set; }
+        public PointF ScalePoint { get; set; }
+        public float ScaleFactor { get; set; }
         public Star(PointF p, Color color)
         {
             center = p;
@@ -84,13 +85,20 @@ namespace GSC_LR4
             //    tr.Translate(0, dy);
             //    path.Transform(tr);
             //}
-            if (ScalePoint != 0)
+            if (ScalePoint != PointF.Empty)
             {
+                //PointF oCenter = center;
+                //var tr = new Matrix();
+                // var sc = new Matrix(1, 0, 0, ScalePoint, 0, 0);
+                //tr.Translate(-center.X, -center.Y, MatrixOrder.Append);
+                //tr.Multiply(sc, MatrixOrder.Append);
+                //tr.Translate(center.X, center.Y, MatrixOrder.Append);
+                //path.Transform(tr);
+                PointF transformPoint = ScalePoint;
                 var tr = new Matrix();
-                var sc = new Matrix(1, 0, 0, ScalePoint, 0, 0);
-            //    tr.Translate(center.X, center.Y);
-                tr.Multiply(sc,MatrixOrder.Append);
-               // tr.Translate(-center.X, -center.Y);
+                tr.Multiply(new Matrix(1, 0, 0, 1, -transformPoint.X, -transformPoint.Y), MatrixOrder.Append);
+                tr.Multiply(new Matrix(1, 0, 0, ScaleFactor, 0, 0), MatrixOrder.Append);
+                tr.Multiply(new Matrix(1, 0, 0, 1, transformPoint.X, transformPoint.Y), MatrixOrder.Append);
                 path.Transform(tr);
             }
             return path;
