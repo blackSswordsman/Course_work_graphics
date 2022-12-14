@@ -198,13 +198,14 @@ namespace GSC_Lr4
                             e.Graphics.FillRegion(tmoBrush, f1);
                         break;
                     case 2: //subtract
-                        //f1.Complement(f2);
-                        f1.Complement(f2);
-                        using (var tmoBrush = new SolidBrush(Color.Black))
-                            e.Graphics.FillRegion(tmoBrush, f1);
+                        f1.Exclude(f2);
+                        using (var tmoBrush = new SolidBrush(this.BackColor))
+                        {
+                            e.Graphics.DrawPath(new Pen(this.BackColor), Selected[1].GetPath());
+                            e.Graphics.FillRegion(tmoBrush, f2);
+                        }
                         break;
                 }
-
             }
 
         }
@@ -271,7 +272,10 @@ namespace GSC_Lr4
             {
                 Operation = 7;
             }
-
+            if(TMO_Mode.Checked == false)
+            {
+                Operation = 1;
+            }
         }
 
         private void TMOCmbBox_SelectedIndexChanged(object sender, EventArgs e)
