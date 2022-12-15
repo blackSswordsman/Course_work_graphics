@@ -161,6 +161,7 @@
             this.splineBtn.TabIndex = 11;
             this.splineBtn.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.splineBtn.UseVisualStyleBackColor = false;
+            this.splineBtn.Click += new System.EventHandler(this.splineBtn_Click);
             // 
             // TMOCmbBox
             // 

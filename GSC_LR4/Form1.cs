@@ -14,58 +14,53 @@ namespace GSC_Lr4
 {
     public partial class Form1 : Form
     {
-        //Bitmap myBitmap;
-        //Graphics g;
 
-        //Pen DrawPen = new Pen(Color.Black, 1);
-        //List<PointF> VertexList = new List<PointF>();
         private List<IShape> Shapes = new List<IShape>();
         List<IShape> Selected = new List<IShape>();
         int Operation = -1; // Рисование
-        // bool checkPgn = false;
         bool moving = false;
         Point previousPoint = Point.Empty;
-        PointF prevPoint = PointF.Empty;
-       // Point pictureBox1MousePos = new Point();
-        //int shapeType = 0;
-        //PointF MousePos;
+        int shapeType = 0;
         IShape selectedShape;
         SolidBrush myBrush = new SolidBrush(Color.Black);
         Color color = Color.Gray;
         int rotateCount = 1;
-        int scaleCount = 1;
         PointF ReflectPoint=PointF.Empty;
         PointF crossHair;
         IShape TMO;
         int TMOIndex = -1;
-        bool scaling = false;
-
+        List<PointF> SplinePnts = new List<PointF>();
+        int splineCount;
 
 
         public Form1()
         {
             InitializeComponent();
-            //myBitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
-            //g = Graphics.FromImage(myBitmap);
-            //var path = new GraphicsPath();
 
         }
        
         // Обработчик события
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
+            if (shapeType == 1)
+            {
+                SplinePnts.Add(new PointF(e.X, e.Y));
+                pictureBox1.Invalidate();
+                //if (SplinePnts.Count == 4)
+                //{
+                //    pictureBox1.Invalidate();
+                //}
+
+            }
             if (Operation == 2) // select
             {
 
                 for (var i = Shapes.Count - 1; i >= 0; i--)
                     if (Shapes[i].Selected(e.Location)) { selectedShape = Shapes[i]; break; }
                 if (selectedShape != null ) 
-                { moving = true; previousPoint = e.Location; 
-                    //selected.Add(selectedShape);
+                {
+                    moving = true; previousPoint = e.Location; 
                 }
-                //if (selectedShape.CheckScale(e)) { scaling = true; prevPoint = e.Location; }
-                //base.OnMouseDown(e);
-                //pictureBox1.Invalidate();
                 
             }
             if (Operation == 7)
@@ -93,19 +88,11 @@ namespace GSC_Lr4
                 previousPoint = e.Location;
                 pictureBox1.Invalidate();
             }
-            //if (scaling)
-            //{
-            //    var p = new PointF(e.X - prevPoint.X, e.Y - prevPoint.Y);
-            //    selectedShape.ScalePoint = p;
-            //    prevPoint = e.Location;
-            //    pictureBox1.Invalidate();
-            //}
             base.OnMouseMove(e);
         }
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
             if (moving) {  moving = false; Operation = 1; }
-            //if (scaling) { scaling = false; }
             base.OnMouseUp(e);
             //selectedShape = null;
         }
@@ -147,9 +134,45 @@ namespace GSC_Lr4
             Operation = 2;
         }
 
+        public void DrawSpline()
+        {
+
+        }
+
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
-            GraphicsPath _path = new GraphicsPath();
+            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            if (shapeType == 1)
+            {
+                using(Pen pen = new Pen(Color.DarkGreen))
+                if (SplinePnts.Count > 0)
+                {
+                    foreach (var point in SplinePnts)
+                    {
+                        e.Graphics.DrawEllipse(pen, point.X-3, point.Y-3, 5, 5);
+                    }
+                    switch (splineCount)
+                    {
+                        case 1:
+                            {
+                               e.Graphics.DrawLine(pen, SplinePnts[0], SplinePnts[1]);
+                               splineCount++;
+                            }
+                            break;
+                            case 3:
+                                {
+                                    e.Graphics.DrawLine(pen, SplinePnts[2], SplinePnts[3]);
+                                    DrawCubeSpline(new Pen(color), SplinePnts, e.Graphics);
+                                    e.Graphics.DrawLine(pen, SplinePnts[0], SplinePnts[1]);
+                                    e.Graphics.DrawLine(pen, SplinePnts[2], SplinePnts[3]);
+                                    SplinePnts.Clear();
+                                    splineCount = 0;
+                                }
+                                break;
+                            default:splineCount++;break;
+                    }
+                }
+            }
             if (Shapes.Count()!=0)
             {
                 e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
@@ -190,12 +213,14 @@ namespace GSC_Lr4
             {
                 Region f1 = new Region(Selected[0].GetPath());
                 Region f2 = new Region(Selected[1].GetPath());
+                Selected[0].GetPath().AddPath(Selected[1].GetPath(),false);
                 switch (TMOIndex)
                 {
                     case 1: //xor
                         f1.Intersect(Selected[1].GetPath());
                         using (var tmoBrush = new SolidBrush(this.BackColor))
                             e.Graphics.FillRegion(tmoBrush, f1);
+
                         break;
                     case 2: //subtract
                         f1.Exclude(f2);
@@ -210,6 +235,49 @@ namespace GSC_Lr4
 
         }
 
+        private void DrawCubeSpline(Pen drPen, List<PointF> P,Graphics e /*Point[] P*/)
+        {
+            // Матрица вещественных коэффициентов L
+            PointF[] L = new PointF[4];
+
+            // Касательные векторы
+            PointF vector1 = P[0];
+            PointF vector2 = P[0];
+
+            const double dt = 0.04;
+            double t = 0;
+            double xt, yt;
+
+            PointF Ppred = P[0], Pt = P[0];
+
+            vector1.X = 4 * (P[1].X - P[0].X);
+            vector1.Y = 4 * (P[1].Y - P[0].Y);
+            vector2.X = 4 * (P[3].X - P[2].X);
+            vector2.Y = 4 * (P[3].Y - P[2].Y);
+
+            // Расчет коэффициентов полинома
+            L[0].X = 2 * P[0].X - 2 * P[2].X + vector1.X + vector2.X; // Ax
+            L[0].Y = 2 * P[0].Y - 2 * P[2].Y + vector1.Y + vector2.Y; // Ay
+            L[1].X = -3 * P[0].X + 3 * P[2].X - 2 * vector1.X - vector2.X; // Bx
+            L[1].Y = -3 * P[0].Y + 3 * P[2].Y - 2 * vector1.Y - vector2.Y; // By
+            L[2].X = vector1.X; // Cx
+            L[2].Y = vector1.Y; // Cy
+            L[3].X = P[0].X; // Dx
+            L[3].Y = P[0].Y; // Dy
+
+            while (t < 1 + dt / 2)
+            {
+                xt = ((L[0].X * t + L[1].X) * t + L[2].X) * t + L[3].X;
+                yt = ((L[0].Y * t + L[1].Y) * t + L[2].Y) * t + L[3].Y;
+
+                Pt.X = (int)Math.Round(xt);
+                Pt.Y = (int)Math.Round(yt);
+
+                e.DrawLine(drPen, Ppred, Pt);
+                Ppred = Pt;
+                t += dt;
+            }
+        }
         private void RotateBtn_Click(object sender, EventArgs e)
         {
             Operation = 3; //rotate
@@ -295,6 +363,11 @@ namespace GSC_Lr4
             pictureBox1.Invalidate();
             selectedShape.ScaleFactor+=0.7f;
            // selectedShape = null;
+        }
+
+        private void splineBtn_Click(object sender, EventArgs e)
+        {
+            shapeType = 1;
         }
     }
 }
