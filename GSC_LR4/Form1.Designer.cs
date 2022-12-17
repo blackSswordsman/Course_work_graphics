@@ -48,8 +48,11 @@
             this.TMO_Mode = new System.Windows.Forms.CheckBox();
             this.EnlargeBtn = new System.Windows.Forms.Button();
             this.MinimizeBtn = new System.Windows.Forms.Button();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.label2 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // clearBtn
@@ -150,6 +153,7 @@
             this.segmentBtn.TabIndex = 12;
             this.segmentBtn.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.segmentBtn.UseVisualStyleBackColor = false;
+            this.segmentBtn.Click += new System.EventHandler(this.segmentBtn_Click);
             // 
             // splineBtn
             // 
@@ -170,7 +174,7 @@
             this.TMOCmbBox.Items.AddRange(new object[] {
             "Симметрическая разность",
             "Разность"});
-            this.TMOCmbBox.Location = new System.Drawing.Point(1522, 826);
+            this.TMOCmbBox.Location = new System.Drawing.Point(1455, 824);
             this.TMOCmbBox.Name = "TMOCmbBox";
             this.TMOCmbBox.Size = new System.Drawing.Size(185, 24);
             this.TMOCmbBox.TabIndex = 15;
@@ -194,7 +198,7 @@
             // 
             // RotateBtn
             // 
-            this.RotateBtn.Location = new System.Drawing.Point(1609, 515);
+            this.RotateBtn.Location = new System.Drawing.Point(1610, 545);
             this.RotateBtn.Name = "RotateBtn";
             this.RotateBtn.Size = new System.Drawing.Size(107, 30);
             this.RotateBtn.TabIndex = 16;
@@ -204,7 +208,7 @@
             // 
             // DeleteBtn
             // 
-            this.DeleteBtn.Location = new System.Drawing.Point(1203, 818);
+            this.DeleteBtn.Location = new System.Drawing.Point(1660, 581);
             this.DeleteBtn.Name = "DeleteBtn";
             this.DeleteBtn.Size = new System.Drawing.Size(105, 35);
             this.DeleteBtn.TabIndex = 17;
@@ -214,7 +218,7 @@
             // 
             // ReflectBtn
             // 
-            this.ReflectBtn.Location = new System.Drawing.Point(1609, 560);
+            this.ReflectBtn.Location = new System.Drawing.Point(1723, 543);
             this.ReflectBtn.Name = "ReflectBtn";
             this.ReflectBtn.Size = new System.Drawing.Size(107, 32);
             this.ReflectBtn.TabIndex = 18;
@@ -224,9 +228,9 @@
             // 
             // ScaleBtn
             // 
-            this.ScaleBtn.Location = new System.Drawing.Point(1609, 609);
+            this.ScaleBtn.Location = new System.Drawing.Point(17, 9);
             this.ScaleBtn.Name = "ScaleBtn";
-            this.ScaleBtn.Size = new System.Drawing.Size(107, 34);
+            this.ScaleBtn.Size = new System.Drawing.Size(186, 34);
             this.ScaleBtn.TabIndex = 19;
             this.ScaleBtn.Text = "Масштаб";
             this.ScaleBtn.UseVisualStyleBackColor = true;
@@ -234,7 +238,7 @@
             // 
             // ExecuteTMO
             // 
-            this.ExecuteTMO.Location = new System.Drawing.Point(1611, 785);
+            this.ExecuteTMO.Location = new System.Drawing.Point(1678, 818);
             this.ExecuteTMO.Name = "ExecuteTMO";
             this.ExecuteTMO.Size = new System.Drawing.Size(136, 35);
             this.ExecuteTMO.TabIndex = 21;
@@ -245,7 +249,7 @@
             // TMO_Mode
             // 
             this.TMO_Mode.AutoSize = true;
-            this.TMO_Mode.Location = new System.Drawing.Point(1356, 826);
+            this.TMO_Mode.Location = new System.Drawing.Point(1268, 826);
             this.TMO_Mode.Name = "TMO_Mode";
             this.TMO_Mode.Size = new System.Drawing.Size(108, 21);
             this.TMO_Mode.TabIndex = 22;
@@ -255,9 +259,9 @@
             // 
             // EnlargeBtn
             // 
-            this.EnlargeBtn.Location = new System.Drawing.Point(1609, 663);
+            this.EnlargeBtn.Location = new System.Drawing.Point(17, 66);
             this.EnlargeBtn.Name = "EnlargeBtn";
-            this.EnlargeBtn.Size = new System.Drawing.Size(75, 23);
+            this.EnlargeBtn.Size = new System.Drawing.Size(92, 36);
             this.EnlargeBtn.TabIndex = 23;
             this.EnlargeBtn.Text = "+";
             this.EnlargeBtn.UseVisualStyleBackColor = true;
@@ -265,12 +269,33 @@
             // 
             // MinimizeBtn
             // 
-            this.MinimizeBtn.Location = new System.Drawing.Point(1717, 663);
+            this.MinimizeBtn.Location = new System.Drawing.Point(112, 66);
             this.MinimizeBtn.Name = "MinimizeBtn";
-            this.MinimizeBtn.Size = new System.Drawing.Size(75, 23);
+            this.MinimizeBtn.Size = new System.Drawing.Size(91, 36);
             this.MinimizeBtn.TabIndex = 24;
             this.MinimizeBtn.Text = "-";
             this.MinimizeBtn.UseVisualStyleBackColor = true;
+            this.MinimizeBtn.Click += new System.EventHandler(this.MinimizeBtn_Click);
+            // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.SystemColors.Menu;
+            this.panel2.Controls.Add(this.MinimizeBtn);
+            this.panel2.Controls.Add(this.ScaleBtn);
+            this.panel2.Controls.Add(this.EnlargeBtn);
+            this.panel2.Location = new System.Drawing.Point(1611, 658);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(217, 121);
+            this.panel2.TabIndex = 25;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(1616, 638);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(131, 17);
+            this.label2.TabIndex = 26;
+            this.label2.Text = "Масштабирование";
             // 
             // Form1
             // 
@@ -278,11 +303,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(1840, 870);
-            this.Controls.Add(this.MinimizeBtn);
-            this.Controls.Add(this.EnlargeBtn);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.TMO_Mode);
             this.Controls.Add(this.ExecuteTMO);
-            this.Controls.Add(this.ScaleBtn);
             this.Controls.Add(this.ReflectBtn);
             this.Controls.Add(this.DeleteBtn);
             this.Controls.Add(this.RotateBtn);
@@ -291,11 +314,13 @@
             this.Controls.Add(this.selectBtn);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.panel2);
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "Form1";
             this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -323,6 +348,8 @@
         private System.Windows.Forms.CheckBox TMO_Mode;
         private System.Windows.Forms.Button EnlargeBtn;
         private System.Windows.Forms.Button MinimizeBtn;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Label label2;
     }
 }
 

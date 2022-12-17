@@ -25,12 +25,14 @@ namespace GSC_Lr4
         SolidBrush myBrush = new SolidBrush(Color.Black);
         Color color = Color.Gray;
         int rotateCount = 1;
+        float scaleCount = 1f;
         PointF ReflectPoint=PointF.Empty;
         PointF crossHair;
-        IShape TMO;
+        //IShape TMO;
         int TMOIndex = -1;
         List<PointF> SplinePnts = new List<PointF>();
         int splineCount;
+        bool TMO = false;
 
 
         public Form1()
@@ -46,11 +48,6 @@ namespace GSC_Lr4
             {
                 SplinePnts.Add(new PointF(e.X, e.Y));
                 pictureBox1.Invalidate();
-                //if (SplinePnts.Count == 4)
-                //{
-                //    pictureBox1.Invalidate();
-                //}
-
             }
             if (Operation == 2) // select
             {
@@ -62,6 +59,17 @@ namespace GSC_Lr4
                     moving = true; previousPoint = e.Location; 
                 }
                 
+            }
+            if (Operation == 2 && TMO==true) // select
+            {
+                for (var i = Selected.Count-1; i >= 0; i--)
+                    if ( Selected[i].Selected(e.Location)) 
+                    { selectedShape = Selected[i]; break; }
+                if (selectedShape != null)
+                {
+                    moving = true; previousPoint = e.Location;
+                }
+
             }
             if (Operation == 7)
             {
@@ -81,14 +89,26 @@ namespace GSC_Lr4
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
-            if (moving)
+            if (moving && TMO==false)
             {
                 var d = new Point(e.X - previousPoint.X, e.Y - previousPoint.Y);
                 selectedShape.Move(d);
                 previousPoint = e.Location;
                 pictureBox1.Invalidate();
             }
-            base.OnMouseMove(e);
+            if (moving && TMO == true)
+            {
+                Operation = 8;
+                var d = new Point(e.X - previousPoint.X, e.Y - previousPoint.Y);
+                foreach(var tmo in Selected)
+                {
+                    tmo.Move(d);
+                    previousPoint = e.Location;
+                    pictureBox1.Invalidate();
+                }
+                
+            }
+                base.OnMouseMove(e);
         }
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
@@ -213,14 +233,13 @@ namespace GSC_Lr4
             {
                 Region f1 = new Region(Selected[0].GetPath());
                 Region f2 = new Region(Selected[1].GetPath());
-                Selected[0].GetPath().AddPath(Selected[1].GetPath(),false);
+                //Selected[0].GetPath().AddPath(Selected[1].GetPath(),false);
                 switch (TMOIndex)
                 {
                     case 1: //xor
                         f1.Intersect(Selected[1].GetPath());
                         using (var tmoBrush = new SolidBrush(this.BackColor))
                             e.Graphics.FillRegion(tmoBrush, f1);
-
                         break;
                     case 2: //subtract
                         f1.Exclude(f2);
@@ -231,6 +250,7 @@ namespace GSC_Lr4
                         }
                         break;
                 }
+                TMO = true;
             }
 
         }
@@ -280,9 +300,22 @@ namespace GSC_Lr4
         }
         private void RotateBtn_Click(object sender, EventArgs e)
         {
-            Operation = 3; //rotate
-            selectedShape.RotationAngle = 45*rotateCount;
-            rotateCount++;
+            if (TMO == true)
+            {
+                Operation = 8;
+                foreach(var tmo in Selected)
+                {
+                    tmo.RotationAngle = 45 * rotateCount;
+                    //selectedShape.RotationAngle = 45 * rotateCount;
+                    rotateCount++;
+                }
+            }
+            else
+            {
+                Operation = 3; //rotate
+                selectedShape.RotationAngle = 45 * rotateCount;
+                rotateCount++;
+            }
             pictureBox1.Invalidate();
         }
 
@@ -367,7 +400,20 @@ namespace GSC_Lr4
 
         private void splineBtn_Click(object sender, EventArgs e)
         {
-            shapeType = 1;
+            shapeType = 1; //spline 
+        }
+
+        private void segmentBtn_Click(object sender, EventArgs e)
+        {
+            shapeType = 2; //line segment
+        }
+
+        private void MinimizeBtn_Click(object sender, EventArgs e)
+        {
+            selectedShape.ScalePoint = crossHair;
+            pictureBox1.Invalidate();
+            selectedShape.ScaleFactor = 0.8f/scaleCount;
+            scaleCount+=0.5f;
         }
     }
 }
