@@ -15,24 +15,24 @@ namespace GSC_Lr4
     public partial class Form1 : Form
     {
 
-        private List<IShape> Shapes = new List<IShape>();
-        List<IShape> Selected = new List<IShape>();
-        int Operation = -1; // Рисование
+        private List<IShape> Shapes = new List<IShape>(); // list of shapes 
+        List<IShape> Selected = new List<IShape>(); //list of selected shapes 
+        int Operation = -1; // placing shapes on surface 
         bool moving = false;
         Point previousPoint = Point.Empty;
-        int shapeType = 0;
+        int shapeType = 0; 
         IShape selectedShape;
         SolidBrush myBrush = new SolidBrush(Color.Black);
-        Color color = Color.Gray;
+        Color color = Color.Gray; //default color
         int rotateCount = 1;
         float scaleCount = 1f;
         PointF ReflectPoint=PointF.Empty;
-        PointF crossHair;
-        //IShape TMO;
-        int TMOIndex = -1;
-        List<PointF> SplinePnts = new List<PointF>();
-        int splineCount;
-        bool TMO = false;
+        PointF crossHair;  //point of scaling 
+        //TMO - Boolean operation on polygons (xor,union, etc.) 
+        int TMOIndex = -1; //switch between tmo operations 
+        List<PointF> SplinePnts = new List<PointF>(); //list of cubic spline points 
+        int splineCount; // count points for drawing spline 
+        bool TMO = false; //
 
 
         public Form1()
@@ -161,6 +161,10 @@ namespace GSC_Lr4
 
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
+            if (Operation == 10)  //clear
+            {
+                e.Graphics.Clear(this.BackColor);
+            }
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             if (shapeType == 1)
             {
@@ -303,8 +307,8 @@ namespace GSC_Lr4
         {
             if (TMO == true)
             {
-                Operation = 8;
-                var oxcMin = Math.Min(Selected[0].Min().X, Selected[1].Min().X);
+                Operation = 8; //tmo 
+                var oxcMin = Math.Min(Selected[0].Min().X, Selected[1].Min().X); //find merged shape's ceneter
                 var oycMin = Math.Min(Selected[0].Min().Y, Selected[1].Min().Y);
                 var oxcMax = Math.Max(Selected[0].Max().X, Selected[1].Max().X);
                 var oycMax = Math.Max(Selected[1].Max().Y, Selected[0].Min().Y);
@@ -363,10 +367,11 @@ namespace GSC_Lr4
 
         private void clearBtn_Click(object sender, EventArgs e)
         {
-            Operation = 1;
+            Operation = 10;
             Shapes.Clear();
             Selected.Clear();
-            selectedShape = null;
+            TMO = false;
+            //selectedShape = null;
             pictureBox1.Invalidate();
         }
 
@@ -390,6 +395,7 @@ namespace GSC_Lr4
             if(TMO_Mode.Checked == false)
             {
                 Operation = 1;
+                TMO = false;
             }
         }
 
