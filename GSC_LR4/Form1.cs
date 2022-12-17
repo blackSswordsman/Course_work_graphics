@@ -46,24 +46,28 @@ namespace GSC_Lr4
         // Обработчик события
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (shapeType == 2)
+            if (shapeType == 2 && Operation ==1 )
             {
                 //segment.Point1 = new PointF(e.X, e.Y);
                 //segment.Point2 = new PointF(e.X, e.Y);
                 if (Point1 == PointF.Empty)
                 {
                     Point1 = e.Location;
+                    pictureBox1.Invalidate();
                 }
                // if (Point2 == PointF.Empty)
                else
                 {
                     Point2 = e.Location;
+                    pictureBox1.Invalidate();
                 }
                 if (Point2 != PointF.Empty)
                 {
                     segment = new Line(color, Point1, Point2);
                     Shapes.Add(segment);
                     pictureBox1.Invalidate();
+                    Point1 = PointF.Empty;
+                    Point2 = PointF.Empty;
                 }
             }
             if (shapeType == 1) //spline 
@@ -182,13 +186,22 @@ namespace GSC_Lr4
                 e.Graphics.Clear(this.BackColor);
             }
 
-            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            using (Pen pen = new Pen(color))
-
-            if (shapeType == 2) //line segment
-            { 
-               segment.Draw(e.Graphics);
+            if (shapeType == 2 )
+            {
+                e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                using (Pen pen = new Pen(Color.DarkGreen))
+                {
+                    if (Point1 != PointF.Empty)
+                    
+                        e.Graphics.DrawEllipse(pen, Point1.X + 2, Point1.Y + 2, 6, 6);
+                    
+                    if (Point2 != PointF.Empty)
+                        e.Graphics.DrawEllipse(pen, Point2.X + 2, Point2.Y + 2, 6, 6);
+                }
             }
+
+            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+ 
             if (shapeType == 1) //spline 
             {
                 using(Pen pen = new Pen(Color.DarkGreen))
@@ -461,7 +474,8 @@ namespace GSC_Lr4
         private void segmentBtn_Click(object sender, EventArgs e)
         {
             shapeType = 2; //line segment
-            
+            Operation = 1;
+
         }
 
         private void MinimizeBtn_Click(object sender, EventArgs e)

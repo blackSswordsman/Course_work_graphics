@@ -21,6 +21,7 @@ namespace GSC_LR4
         public PointF Point1 { get; set; }
         public PointF Point2 { get; set; }
         public List<PointF> points { get; set; }
+        public PointF center { get; set; }
 
         public Line(Color color, PointF point1, PointF point2)
         {
@@ -30,15 +31,21 @@ namespace GSC_LR4
         {
             var path = new GraphicsPath();
             path.AddLine(Point1, Point2);
+            if (RotationAngle != 0 )
+            {
+                center = Center();
+                var mx = new Matrix();
+                mx.RotateAt(RotationAngle, center);
+                path.Transform(mx);
+            }
             return path;
         }
         public bool Selected(PointF p)
         {
-            var result = false;
-            using (var path = GetPath())
-            using (var pen = new Pen(LineColor, LineWidth + 2))
-                result = path.IsOutlineVisible(p, pen);
-            return result;
+            float distance1 = (float)Math.Sqrt(Math.Pow(Point1.X - p.X, 2) + Math.Pow(Point1.Y - p.Y, 2));
+            float distance2 = (float)Math.Sqrt(Math.Pow(Point2.X - p.X, 2) + Math.Pow(Point2.Y - p.Y, 2));
+            float distance3 = (float)Math.Sqrt(Math.Pow(Point2.X - Point1.X, 2) + Math.Pow(Point2.Y - Point1.Y, 2));
+            return distance1 + distance2 - distance3 < 1f;
         }
         public void Draw(Graphics g)
         {
@@ -63,11 +70,20 @@ namespace GSC_LR4
         {
             return new PointF();
         }
-        public PointF center { get; set; }
+        public PointF Center ()
+        {
+            center = new PointF((Point1.X + Point2.X) / 2, (Point1.Y + Point2.Y) / 2);
+            return center;
+        }
 
         public void DrawSelection(Graphics e)
         {
-
+            RectangleF bounds = GetPath().GetBounds();
+            Pen pen = new Pen(Color.Gray)
+            {
+                DashStyle = DashStyle.Dash
+            };
+            e.DrawRectangle(pen, bounds.X, bounds.Y, bounds.Width, bounds.Height);
         }
     }
 }
