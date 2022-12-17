@@ -33,7 +33,9 @@ namespace GSC_Lr4
         List<PointF> SplinePnts = new List<PointF>(); //list of cubic spline points 
         int splineCount; // count points for drawing spline 
         bool TMO = false; //
-
+        PointF Point1;
+        PointF Point2;
+        Line segment;
 
         public Form1()
         {
@@ -44,7 +46,27 @@ namespace GSC_Lr4
         // Обработчик события
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (shapeType == 1)
+            if (shapeType == 2)
+            {
+                //segment.Point1 = new PointF(e.X, e.Y);
+                //segment.Point2 = new PointF(e.X, e.Y);
+                if (Point1 == PointF.Empty)
+                {
+                    Point1 = e.Location;
+                }
+               // if (Point2 == PointF.Empty)
+               else
+                {
+                    Point2 = e.Location;
+                }
+                if (Point2 != PointF.Empty)
+                {
+                    segment = new Line(color, Point1, Point2);
+                    Shapes.Add(segment);
+                    pictureBox1.Invalidate();
+                }
+            }
+            if (shapeType == 1) //spline 
             {
                 SplinePnts.Add(new PointF(e.X, e.Y));
                 pictureBox1.Invalidate();
@@ -60,7 +82,7 @@ namespace GSC_Lr4
                 }
                 
             }
-            if (Operation == 2 && TMO==true) // select
+            if (Operation == 2 && TMO==true) // select tmo polygon 
             {
                 for (var i = Selected.Count-1; i >= 0; i--)
                     if ( Selected[i].Selected(e.Location)) 
@@ -71,7 +93,7 @@ namespace GSC_Lr4
                 }
 
             }
-            if (Operation == 7)
+            if (Operation == 7) //adding polygon to selected list for tmo
             {
                 while (Selected.Count() < 2)
                 {
@@ -89,14 +111,14 @@ namespace GSC_Lr4
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
-            if (moving && TMO==false)
+            if (moving && TMO==false) //moving regular polygon 
             {
                 var d = new Point(e.X - previousPoint.X, e.Y - previousPoint.Y);
                 selectedShape.Move(d);
                 previousPoint = e.Location;
                 pictureBox1.Invalidate();
             }
-            if (moving && TMO == true)
+            if (moving && TMO == true) //moving tmo polygon 
             {
                 Operation = 8;
                 var d = new Point(e.X - previousPoint.X, e.Y - previousPoint.Y);
@@ -117,13 +139,13 @@ namespace GSC_Lr4
             //selectedShape = null;
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void button3_Click(object sender, EventArgs e) //shows current color 
         {
             ColorDialog dlg = new ColorDialog();
             dlg.ShowDialog();
         }
 
-        private void starBtn_Click(object sender, EventArgs e)
+        private void starBtn_Click(object sender, EventArgs e) // places a star on drawing surface 
         {
             Operation = 1;
             //shapeType = 1;
@@ -131,42 +153,43 @@ namespace GSC_Lr4
             pictureBox1.Invalidate();
 
         }
-        private void RhombBtn_Click(object sender, EventArgs e)
+        private void RhombBtn_Click(object sender, EventArgs e) //places a rhombus (diamond) 
         {
             Operation = 1;
             //shapeType = 2;
             Shapes.Add(new Rhombus(color));
             pictureBox1.Invalidate();
         }
-        private void colorBtn_Click(object sender, EventArgs e)
+        private void colorBtn_Click(object sender, EventArgs e) // color dialog button 
         {
             if (colorDialog1.ShowDialog() == DialogResult.Cancel)
                 return;
-            // установка цвета фигуры
             this.showColor.BackColor = colorDialog1.Color;
             myBrush.Color = colorDialog1.Color;
             color = colorDialog1.Color;
 
         }
 
-        private void selectBtn_Click(object sender, EventArgs e)
+        private void selectBtn_Click(object sender, EventArgs e) //hit test 
         {
             Operation = 2;
         }
 
-        public void DrawSpline()
-        {
-
-        }
-
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
-            if (Operation == 10)  //clear
+            if (Operation == 10)  //clear button 
             {
                 e.Graphics.Clear(this.BackColor);
             }
+
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            if (shapeType == 1)
+            using (Pen pen = new Pen(color))
+
+            if (shapeType == 2) //line segment
+            { 
+               segment.Draw(e.Graphics);
+            }
+            if (shapeType == 1) //spline 
             {
                 using(Pen pen = new Pen(Color.DarkGreen))
                 if (SplinePnts.Count > 0)
@@ -175,8 +198,8 @@ namespace GSC_Lr4
                     {
                         e.Graphics.DrawEllipse(pen, point.X-3, point.Y-3, 5, 5);
                     }
-                    switch (splineCount)
-                    {
+                    switch (splineCount) //draws 2 vectors for spline 
+                    {                    //between 1-2 and 3-4 points 
                         case 1:
                             {
                                e.Graphics.DrawLine(pen, SplinePnts[0], SplinePnts[1]);
@@ -202,7 +225,7 @@ namespace GSC_Lr4
                 e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
                 foreach (var shape in Shapes)
 
-                    shape.Draw(e.Graphics);
+                    shape.Draw(e.Graphics); //used to redraw the surface 
             }
             if (Operation ==2)  // select
             {
@@ -233,9 +256,8 @@ namespace GSC_Lr4
                 }
                 pictureBox1.Invalidate();
             }
-            if (Operation == 8 )
+            if (Operation == 8 ) // redraw tmo each time 
             {
-                //при очситки окна потом нельзя выбрать фигуру 
                 Region f1 = new Region(Selected[0].GetPath());
                 Region f2 = new Region(Selected[1].GetPath());
                 //Selected[0].GetPath().AddPath(Selected[1].GetPath(),false);
@@ -439,6 +461,7 @@ namespace GSC_Lr4
         private void segmentBtn_Click(object sender, EventArgs e)
         {
             shapeType = 2; //line segment
+            
         }
 
         private void MinimizeBtn_Click(object sender, EventArgs e)

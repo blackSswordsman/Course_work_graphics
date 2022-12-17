@@ -11,7 +11,6 @@ namespace GSC_LR4
 {
     class Rhombus : IShape
     {
-        List<PointF> VertexList;
         public PointF maxPoint;
         public PointF minPoint;
         public PointF center { get; set; }
@@ -23,30 +22,12 @@ namespace GSC_LR4
        public bool TMO { get; set; }
        public PointF TMOCenter { get; set; }
 
-        public Rhombus(PointF p)
-        {
-            VertexList = new List<PointF>();
-            maxPoint = new PointF();
-            minPoint = new PointF();
-            center = p;
-           
-        }
-        public Rhombus(List<PointF> vertexes, Color color)
-        {
-            VertexList = vertexes.ConvertAll(item => new PointF(item.X, item.Y));
-            maxPoint = new PointF();
-            minPoint = new PointF();
-            oColor = color;
-        }
-
         public Rhombus(Color Color)
         {
-            center = new PointF(300, 300);
+            center = new PointF(300, 300); // appears on surface (middle?) 
             oColor = Color;
-            VertexList =  new List<PointF>();
             TMO = false;
         }
-
 
         public GraphicsPath GetPath()
         {
