@@ -21,6 +21,8 @@ namespace GSC_LR4
         public PointF ReflectionPoint { get; set; }
         public PointF ScalePoint { get; set; }
         public float ScaleFactor { get; set; }
+        public bool TMO { get; set; }
+        public PointF TMOCenter { get; set; }
         public Star(PointF p, Color color)
         {
             center = p;

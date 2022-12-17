@@ -231,6 +231,7 @@ namespace GSC_Lr4
             }
             if (Operation == 8 )
             {
+                //при очситки окна потом нельзя выбрать фигуру 
                 Region f1 = new Region(Selected[0].GetPath());
                 Region f2 = new Region(Selected[1].GetPath());
                 //Selected[0].GetPath().AddPath(Selected[1].GetPath(),false);
@@ -303,20 +304,25 @@ namespace GSC_Lr4
             if (TMO == true)
             {
                 Operation = 8;
+                var oxcMin = Math.Min(Selected[0].Min().X, Selected[1].Min().X);
+                var oycMin = Math.Min(Selected[0].Min().Y, Selected[1].Min().Y);
+                var oxcMax = Math.Max(Selected[0].Max().X, Selected[1].Max().X);
+                var oycMax = Math.Max(Selected[1].Max().Y, Selected[0].Min().Y);
+                var TMOCenter = new PointF(((oxcMax + oxcMin) / 2), (oycMax + oycMin) / 2);
                 foreach(var tmo in Selected)
                 {
-                    tmo.RotationAngle = 45 * rotateCount;
-                    //selectedShape.RotationAngle = 45 * rotateCount;
-                    rotateCount++;
+                    tmo.TMO = true;
+                    tmo.TMOCenter = TMOCenter;
+                    tmo.RotationAngle = 45*rotateCount;
                 }
             }
-            else
+            else if (TMO ==false)
             {
                 Operation = 3; //rotate
                 selectedShape.RotationAngle = 45 * rotateCount;
-                rotateCount++;
             }
             pictureBox1.Invalidate();
+            rotateCount++;
         }
 
         private void DeleteBtn_Click(object sender, EventArgs e)
@@ -350,13 +356,17 @@ namespace GSC_Lr4
 
         private void ScaleBtn_Click(object sender, EventArgs e)
         {
+            Operation = 8;
             Operation = 6;
             pictureBox1.Invalidate();
         }
 
         private void clearBtn_Click(object sender, EventArgs e)
         {
+            Operation = 1;
             Shapes.Clear();
+            Selected.Clear();
+            selectedShape = null;
             pictureBox1.Invalidate();
         }
 
@@ -364,6 +374,10 @@ namespace GSC_Lr4
         private void ExecuteTMO_Click(object sender, EventArgs e)
         {
             Operation = 8;
+            foreach(var tmo in Shapes)
+            {
+                tmo.TMO = true;
+            }
             pictureBox1.Invalidate();
         }
 
@@ -392,10 +406,23 @@ namespace GSC_Lr4
 
         private void EnlargeBtn_Click(object sender, EventArgs e)
         {
-            selectedShape.ScalePoint = crossHair;
-            pictureBox1.Invalidate();
-            selectedShape.ScaleFactor+=0.7f;
-           // selectedShape = null;
+            if (TMO == true)
+            {
+                Operation = 8;
+                foreach (var tmo in Selected)
+                {
+                    tmo.ScalePoint = crossHair;
+                    pictureBox1.Invalidate();
+                    tmo.ScaleFactor += 0.7f;
+                }
+            }
+            else if (TMO == false)
+            {
+                selectedShape.ScalePoint = crossHair;
+                pictureBox1.Invalidate();
+                selectedShape.ScaleFactor += 0.7f;
+                // selectedShape = null;
+            }
         }
 
         private void splineBtn_Click(object sender, EventArgs e)

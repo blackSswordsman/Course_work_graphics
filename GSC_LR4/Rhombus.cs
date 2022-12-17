@@ -20,6 +20,8 @@ namespace GSC_LR4
        public PointF ReflectionPoint { get; set; }
        public PointF ScalePoint { get; set; }
        public float ScaleFactor { get; set; }
+       public bool TMO { get; set; }
+       public PointF TMOCenter { get; set; }
 
         public Rhombus(PointF p)
         {
@@ -42,7 +44,9 @@ namespace GSC_LR4
             center = new PointF(300, 300);
             oColor = Color;
             VertexList =  new List<PointF>();
+            TMO = false;
         }
+
 
         public GraphicsPath GetPath()
         {
@@ -55,21 +59,21 @@ namespace GSC_LR4
             new PointF(center.X, center.Y + 100)
         };
             path.AddPolygon(VertexRhomb.ToArray());
-            if (RotationAngle != 0)
+
+            if (RotationAngle != 0 && TMO==false)
             {
                 var mx = new Matrix();
                 mx.RotateAt(RotationAngle, center);
                 path.Transform(mx);
             }
-            //if (ReflectionPoint != new PointF(0, 0))
-            //{
-                // var rf = new Matrix(1, 0, 0, -1, 0, 0);
-                //var tr = new Matrix();
-                // float dy = 0 - ReflectionPoint.Y;
-                //tr.Multiply(rf);
-                // tr.Translate(0, dy);
-                // path.Transform(tr);
-           // }
+
+            if (RotationAngle != 0 && TMO==true)
+            {
+                var mx = new Matrix();
+                mx.RotateAt(RotationAngle, TMOCenter);
+                path.Transform(mx);
+            }
+
             if (ScalePoint!=PointF.Empty)
             {
                 PointF transformPoint = ScalePoint;
@@ -85,7 +89,7 @@ namespace GSC_LR4
                 path.Transform(tr);
             }
 
-            return path;
+                return path;
         }
 
         public void Reflect(PointF r)

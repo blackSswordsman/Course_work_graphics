@@ -16,6 +16,8 @@ namespace GSC_LR4
         PointF ReflectionPoint { get; set; }
         PointF ScalePoint { get; set; }
         float ScaleFactor { get; set; }
+        bool TMO { get; set; }
+        PointF TMOCenter { get; set; }
         bool Selected(PointF p);
         void Draw(Graphics g);
         void Move(PointF m);
