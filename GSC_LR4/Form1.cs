@@ -257,7 +257,7 @@ namespace GSC_Lr4
                         new PointF(pictureBox1.Width,ReflectPoint.Y));
                 pictureBox1.Invalidate();
             }
-            if (Operation == 5 && TMO==true)  //reflect
+            if (Operation == 5 && TMO==true)  //reflect and tmo 
             {
                 using (var pen = new Pen(new SolidBrush(Color.Red)))
                     e.Graphics.DrawLine(pen, new PointF(0, ReflectPoint.Y),
@@ -293,6 +293,36 @@ namespace GSC_Lr4
                         new PointF(crossHair.X, crossHair.Y + 7));
                     e.Graphics.DrawLine(pen, new PointF(crossHair.X - 7, crossHair.Y), 
                         new PointF(crossHair.X + 7, crossHair.Y));
+                }
+                pictureBox1.Invalidate();
+            }
+            if (Operation == 6 && TMO==true) //scale and tmo 
+            {
+                using (var pen = new Pen(new SolidBrush(Color.Red)))
+                {
+                    e.Graphics.DrawLine(pen, new PointF(crossHair.X, crossHair.Y - 7),
+                        new PointF(crossHair.X, crossHair.Y + 7));
+                    e.Graphics.DrawLine(pen, new PointF(crossHair.X - 7, crossHair.Y),
+                        new PointF(crossHair.X + 7, crossHair.Y));
+                    Region f1 = new Region(Selected[0].GetPath());
+                    Region f2 = new Region(Selected[1].GetPath());
+                    //Selected[0].GetPath().AddPath(Selected[1].GetPath(),false);
+                    switch (TMOIndex)
+                    {
+                        case 1: //xor
+                            f1.Intersect(Selected[1].GetPath());
+                            using (var tmoBrush = new SolidBrush(this.BackColor))
+                                e.Graphics.FillRegion(tmoBrush, f1);
+                            break;
+                        case 2: //subtract
+                            f1.Exclude(f2);
+                            using (var tmoBrush = new SolidBrush(this.BackColor))
+                            {
+                                e.Graphics.DrawPath(new Pen(this.BackColor), Selected[1].GetPath());
+                                e.Graphics.FillRegion(tmoBrush, f2);
+                            }
+                            break;
+                    }
                 }
                 pictureBox1.Invalidate();
             }
@@ -515,10 +545,24 @@ namespace GSC_Lr4
 
         private void MinimizeBtn_Click(object sender, EventArgs e)
         {
-            selectedShape.ScalePoint = crossHair;
-            pictureBox1.Invalidate();
-            selectedShape.ScaleFactor = 0.8f/scaleCount;
-            scaleCount+=0.5f;
+            if (TMO == false)
+            {
+                selectedShape.ScalePoint = crossHair;
+                pictureBox1.Invalidate();
+                selectedShape.ScaleFactor = 0.8f / scaleCount;
+                scaleCount += 0.5f;
+            }
+            
+            if (TMO == true)
+            {
+                foreach(var tmo in Selected)
+                {
+                    tmo.ScalePoint = crossHair;
+                    pictureBox1.Invalidate();
+                    tmo.ScaleFactor = 0.8f / scaleCount;
+                    scaleCount += 0.5f;
+                }
+            }
         }
     }
 }
