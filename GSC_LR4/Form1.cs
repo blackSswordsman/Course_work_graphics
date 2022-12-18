@@ -257,6 +257,33 @@ namespace GSC_Lr4
                         new PointF(pictureBox1.Width,ReflectPoint.Y));
                 pictureBox1.Invalidate();
             }
+            if (Operation == 5 && TMO==true)  //reflect
+            {
+                using (var pen = new Pen(new SolidBrush(Color.Red)))
+                    e.Graphics.DrawLine(pen, new PointF(0, ReflectPoint.Y),
+                        new PointF(pictureBox1.Width, ReflectPoint.Y));
+                Region f1 = new Region(Selected[0].GetPath());
+                Region f2 = new Region(Selected[1].GetPath());
+                //Selected[0].GetPath().AddPath(Selected[1].GetPath(),false);
+                switch (TMOIndex)
+                {
+                    case 1: //xor
+                        f1.Intersect(Selected[1].GetPath());
+                        using (var tmoBrush = new SolidBrush(this.BackColor))
+                            e.Graphics.FillRegion(tmoBrush, f1);
+                        break;
+                    case 2: //subtract
+                        f1.Exclude(f2);
+                        using (var tmoBrush = new SolidBrush(this.BackColor))
+                        {
+                            e.Graphics.DrawPath(new Pen(this.BackColor), Selected[1].GetPath());
+                            e.Graphics.FillRegion(tmoBrush, f2);
+                        }
+                        break;
+                }
+                //TMO = true;
+                pictureBox1.Invalidate();
+            }
 
             if (Operation == 6) //scale
             {
@@ -373,10 +400,18 @@ namespace GSC_Lr4
         private void ReflectBtn_Click(object sender, EventArgs e)
         {
             Operation = 5; //reflect
-            if (ReflectPoint != PointF.Empty)
+            if (ReflectPoint != PointF.Empty && TMO==false)
             {
                 selectedShape.ReflectionPoint = ReflectPoint;
                 selectedShape.Reflect(ReflectPoint);
+            }
+            if (TMO == true && ReflectPoint != PointF.Empty)
+            {
+                foreach(var tmo in Selected)
+                {
+                    tmo.ReflectionPoint = ReflectPoint;
+                    tmo.Reflect(ReflectPoint);
+                }
             }
             pictureBox1.Invalidate();
         }
