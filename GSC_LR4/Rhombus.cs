@@ -62,11 +62,6 @@ namespace GSC_LR4
                 tr.Multiply(new Matrix(1, 0, 0, 1, -transformPoint.X, -transformPoint.Y),MatrixOrder.Append);
                 tr.Multiply(new Matrix(1, 0, 0, ScaleFactor, 0, 0),MatrixOrder.Append);
                 tr.Multiply(new Matrix(1, 0, 0, 1, transformPoint.X, transformPoint.Y), MatrixOrder.Append);
-                //var sc = new Matrix(1, 0, 0, ScaleFactor, 0, 0);
-                // tr.Translate(-center.X,-center.Y,MatrixOrder.Append);
-                //tr.Translate(-ScalePoint, -center.Y, MatrixOrder.Append);
-                //tr.Multiply(sc,MatrixOrder.Append);
-                //tr.Translate(center.X, center.Y, MatrixOrder.Append);
                 path.Transform(tr);
             }
 
@@ -162,3 +157,4 @@ namespace GSC_LR4
         //}
     }
 }
+

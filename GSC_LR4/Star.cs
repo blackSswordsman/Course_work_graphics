@@ -12,7 +12,6 @@ namespace GSC_LR4
 {
     class Star : IShape
     {
-        List<PointF> VertexList { get; set; }
         public PointF maxPoint;
         public PointF minPoint;
         public PointF center { get; set; }
@@ -23,26 +22,14 @@ namespace GSC_LR4
         public float ScaleFactor { get; set; }
         public bool TMO { get; set; }
         public PointF TMOCenter { get; set; }
-        public Star(PointF p, Color color)
-        {
-            center = p;
-            VertexList = new List<PointF>();
-            maxPoint = new PointF();
-            minPoint = new PointF();
-            oColor = color;
-        }
+       
         public Star(Color Color) // default 
         {
             center = new PointF(150, 150);
             oColor = Color;
+            TMO = false;
         }
-        public Star(List<PointF> vertexes, Color color)
-        {
-            VertexList = vertexes.ConvertAll(item => new PointF(item.X, item.Y));
-            maxPoint = new PointF();
-            minPoint = new PointF();
-            oColor = color;
-        }
+       
         public GraphicsPath GetPath()
         {
             // center = p;
@@ -58,8 +45,10 @@ namespace GSC_LR4
                 if (i % 2 == 0)
                 {
                     VertexStar[i] = new PointF(
-                    x_center + radius * (float)Math.Cos(i * 360 / sides * Math.PI / 180f),
-                    y_center + radius * (float)Math.Sin(i * 360 / sides * Math.PI / 180f));
+                    x_center + radius * (float)Math.Cos
+                    (i * 360 / sides * Math.PI / 180f),
+                    y_center + radius * (float)Math.Sin
+                    (i * 360 / sides * Math.PI / 180f));
                 }
                 else
                 {
@@ -71,31 +60,22 @@ namespace GSC_LR4
             }
             //VertexList.AddRange(VertexStar.ToArray());
             path.AddPolygon(VertexStar.ToArray());
-            if (RotationAngle != 0)
+            if (RotationAngle != 0 && TMO == false)
             {
                 var mx = new Matrix();
                 mx.RotateAt(RotationAngle, center);
                 path.Transform(mx);
             }
-            //if (ReflectionPoint != new PointF(0, 0))
-            //{
-            //    var reflectMx = new Matrix(1, 0, 0, -1, 0, 0);
-            //    float dy = 0 - ReflectionPoint.Y;
-            //    var tr = new Matrix();
-            //    tr.Translate(0, -dy);
-            //    tr.Multiply(reflectMx);
-            //    tr.Translate(0, dy);
-            //    path.Transform(tr);
-            //}
+
+            if (RotationAngle != 0 && TMO == true)
+            {
+                var mx = new Matrix();
+                mx.RotateAt(RotationAngle, TMOCenter);
+                path.Transform(mx);
+            }
+
             if (ScalePoint != PointF.Empty)
             {
-                //PointF oCenter = center;
-                //var tr = new Matrix();
-                // var sc = new Matrix(1, 0, 0, ScalePoint, 0, 0);
-                //tr.Translate(-center.X, -center.Y, MatrixOrder.Append);
-                //tr.Multiply(sc, MatrixOrder.Append);
-                //tr.Translate(center.X, center.Y, MatrixOrder.Append);
-                //path.Transform(tr);
                 PointF transformPoint = ScalePoint;
                 var tr = new Matrix();
                 tr.Multiply(new Matrix(1, 0, 0, 1, -transformPoint.X, -transformPoint.Y), MatrixOrder.Append);

@@ -59,6 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Spline.cs" />
     <Compile Include="Line.cs" />
     <Compile Include="Rhombus.cs" />
     <Compile Include="IShape.cs" />

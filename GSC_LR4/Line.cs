@@ -60,7 +60,7 @@ namespace GSC_LR4
         }
         public void Reflect(PointF r)
         {
-
+            
         }
         public PointF Min()
         {

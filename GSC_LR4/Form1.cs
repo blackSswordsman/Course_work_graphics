@@ -18,49 +18,32 @@ namespace GSC_Lr4
         private List<IShape> Shapes = new List<IShape>(); // list of shapes 
         List<IShape> Selected = new List<IShape>(); //list of selected shapes 
         int Operation = -1; // placing shapes on surface 
-        bool moving = false;
+        bool moving = false;int shapeType = 0; IShape selectedShape;
         Point previousPoint = Point.Empty;
-        int shapeType = 0; 
-        IShape selectedShape;
         SolidBrush myBrush = new SolidBrush(Color.Black);
         Color color = Color.Gray; //default color
-        int rotateCount = 1;
-        float scaleCount = 1f;
-        PointF ReflectPoint=PointF.Empty;
-        PointF crossHair;  //point of scaling 
+        int rotateCount = 1;float scaleCount = 1f;
+        PointF ReflectPoint=PointF.Empty; PointF crossHair;  //point of scaling 
+
         //TMO - Boolean operation on polygons (xor,union, etc.) 
+
         int TMOIndex = -1; //switch between tmo operations 
         List<PointF> SplinePnts = new List<PointF>(); //list of cubic spline points 
         int splineCount; // count points for drawing spline 
-        bool TMO = false; //
-        PointF Point1;
-        PointF Point2;
-        Line segment;
-
+        bool TMO = false;PointF Point1;PointF Point2; Line segment;
+      
         public Form1()
-        {
-            InitializeComponent();
-
-        }
+        {  InitializeComponent();}
        
         // Обработчик события
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (shapeType == 2 && Operation ==1 )
+            if (shapeType == 2 && Operation ==1 )   //adding segment line 
             {
-                //segment.Point1 = new PointF(e.X, e.Y);
-                //segment.Point2 = new PointF(e.X, e.Y);
                 if (Point1 == PointF.Empty)
-                {
-                    Point1 = e.Location;
-                    pictureBox1.Invalidate();
-                }
-               // if (Point2 == PointF.Empty)
+                { Point1 = e.Location;pictureBox1.Invalidate();}
                else
-                {
-                    Point2 = e.Location;
-                    pictureBox1.Invalidate();
-                }
+                {Point2 = e.Location;pictureBox1.Invalidate();}
                 if (Point2 != PointF.Empty)
                 {
                     segment = new Line(color, Point1, Point2);
@@ -71,20 +54,14 @@ namespace GSC_Lr4
                 }
             }
             if (shapeType == 1) //spline 
-            {
-                SplinePnts.Add(new PointF(e.X, e.Y));
-                pictureBox1.Invalidate();
-            }
+            {SplinePnts.Add(new PointF(e.X, e.Y));pictureBox1.Invalidate();}
+
             if (Operation == 2) // select
             {
-
                 for (var i = Shapes.Count - 1; i >= 0; i--)
                     if (Shapes[i].Selected(e.Location)) { selectedShape = Shapes[i]; break; }
                 if (selectedShape != null ) 
-                {
-                    moving = true; previousPoint = e.Location; 
-                }
-                
+                { moving = true; previousPoint = e.Location; }  
             }
             if (Operation == 2 && TMO==true) // select tmo polygon 
             {
@@ -92,10 +69,7 @@ namespace GSC_Lr4
                     if ( Selected[i].Selected(e.Location)) 
                     { selectedShape = Selected[i]; break; }
                 if (selectedShape != null)
-                {
-                    moving = true; previousPoint = e.Location;
-                }
-
+                { moving = true; previousPoint = e.Location;}
             }
             if (Operation == 7) //adding polygon to selected list for tmo
             {
@@ -103,14 +77,9 @@ namespace GSC_Lr4
                 {
                     for (var i = Shapes.Count - 1; i >= 0; i--)
                         if (Shapes[i].Selected(e.Location))
-                        {
-                            Selected.Add(Shapes[i]);
-                            break;
-                        }
-                    break;
+                        { Selected.Add(Shapes[i]);break;}break;
                 }
             }
-           
         }
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
@@ -127,43 +96,25 @@ namespace GSC_Lr4
                 Operation = 8;
                 var d = new Point(e.X - previousPoint.X, e.Y - previousPoint.Y);
                 foreach(var tmo in Selected)
-                {
-                    tmo.Move(d);
-                    previousPoint = e.Location;
-                    pictureBox1.Invalidate();
-                }
-                
+                { tmo.Move(d); previousPoint = e.Location; pictureBox1.Invalidate();}  
             }
                 base.OnMouseMove(e);
         }
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
-            if (moving) {  moving = false; Operation = 1; }
-            base.OnMouseUp(e);
-            //selectedShape = null;
+            if (moving) {  moving = false; Operation = 1; } base.OnMouseUp(e); //selectedShape = null;
         }
-
-        private void button3_Click(object sender, EventArgs e) //shows current color 
-        {
-            ColorDialog dlg = new ColorDialog();
-            dlg.ShowDialog();
-        }
+        private void button3_Click(object sender, EventArgs e) //color select button
+        { ColorDialog dlg = new ColorDialog(); dlg.ShowDialog(); }
 
         private void starBtn_Click(object sender, EventArgs e) // places a star on drawing surface 
-        {
-            Operation = 1;
-            //shapeType = 1;
-            Shapes.Add(new Star(color));
-            pictureBox1.Invalidate();
-
-        }
+        { Operation = 1; Shapes.Add(new Star(color)); pictureBox1.Invalidate(); }
         private void RhombBtn_Click(object sender, EventArgs e) //places a rhombus (diamond) 
-        {
-            Operation = 1;
-            //shapeType = 2;
-            Shapes.Add(new Rhombus(color));
-            pictureBox1.Invalidate();
-        }
+        { Operation = 1; Shapes.Add(new Rhombus(color));  pictureBox1.Invalidate(); }
+        private void splineBtn_Click(object sender, EventArgs e)
+        { shapeType = 1; }                  //spline 
+        private void segmentBtn_Click(object sender, EventArgs e)
+        { shapeType = 2; Operation = 1; }   //line segment
         private void colorBtn_Click(object sender, EventArgs e) // color dialog button 
         {
             if (colorDialog1.ShowDialog() == DialogResult.Cancel)
@@ -171,13 +122,8 @@ namespace GSC_Lr4
             this.showColor.BackColor = colorDialog1.Color;
             myBrush.Color = colorDialog1.Color;
             color = colorDialog1.Color;
-
         }
-
-        private void selectBtn_Click(object sender, EventArgs e) //hit test 
-        {
-            Operation = 2;
-        }
+        private void selectBtn_Click(object sender, EventArgs e) { Operation = 2; }  //hit test 
 
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
@@ -222,11 +168,15 @@ namespace GSC_Lr4
                             case 3:
                                 {
                                     e.Graphics.DrawLine(pen, SplinePnts[2], SplinePnts[3]);
-                                    DrawCubeSpline(new Pen(color), SplinePnts, e.Graphics);
+                                    Spline spline = new Spline(color, SplinePnts);
+                                    Shapes.Add(spline);
+                                    spline.Draw(e.Graphics);
+                                    //DrawSpline(new Pen(color), SplinePnts, e.Graphics);
                                     e.Graphics.DrawLine(pen, SplinePnts[0], SplinePnts[1]);
                                     e.Graphics.DrawLine(pen, SplinePnts[2], SplinePnts[3]);
                                     SplinePnts.Clear();
                                     splineCount = 0;
+                                    shapeType = -1;
                                 }
                                 break;
                             default:splineCount++;break;
@@ -262,25 +212,7 @@ namespace GSC_Lr4
                 using (var pen = new Pen(new SolidBrush(Color.Red)))
                     e.Graphics.DrawLine(pen, new PointF(0, ReflectPoint.Y),
                         new PointF(pictureBox1.Width, ReflectPoint.Y));
-                Region f1 = new Region(Selected[0].GetPath());
-                Region f2 = new Region(Selected[1].GetPath());
-                //Selected[0].GetPath().AddPath(Selected[1].GetPath(),false);
-                switch (TMOIndex)
-                {
-                    case 1: //xor
-                        f1.Intersect(Selected[1].GetPath());
-                        using (var tmoBrush = new SolidBrush(this.BackColor))
-                            e.Graphics.FillRegion(tmoBrush, f1);
-                        break;
-                    case 2: //subtract
-                        f1.Exclude(f2);
-                        using (var tmoBrush = new SolidBrush(this.BackColor))
-                        {
-                            e.Graphics.DrawPath(new Pen(this.BackColor), Selected[1].GetPath());
-                            e.Graphics.FillRegion(tmoBrush, f2);
-                        }
-                        break;
-                }
+                DrawTMO(e.Graphics);
                 //TMO = true;
                 pictureBox1.Invalidate();
             }
@@ -304,97 +236,40 @@ namespace GSC_Lr4
                         new PointF(crossHair.X, crossHair.Y + 7));
                     e.Graphics.DrawLine(pen, new PointF(crossHair.X - 7, crossHair.Y),
                         new PointF(crossHair.X + 7, crossHair.Y));
-                    Region f1 = new Region(Selected[0].GetPath());
-                    Region f2 = new Region(Selected[1].GetPath());
-                    //Selected[0].GetPath().AddPath(Selected[1].GetPath(),false);
-                    switch (TMOIndex)
-                    {
-                        case 1: //xor
-                            f1.Intersect(Selected[1].GetPath());
-                            using (var tmoBrush = new SolidBrush(this.BackColor))
-                                e.Graphics.FillRegion(tmoBrush, f1);
-                            break;
-                        case 2: //subtract
-                            f1.Exclude(f2);
-                            using (var tmoBrush = new SolidBrush(this.BackColor))
-                            {
-                                e.Graphics.DrawPath(new Pen(this.BackColor), Selected[1].GetPath());
-                                e.Graphics.FillRegion(tmoBrush, f2);
-                            }
-                            break;
-                    }
+                    DrawTMO(e.Graphics);
                 }
                 pictureBox1.Invalidate();
             }
             if (Operation == 8 ) // redraw tmo each time 
             {
-                Region f1 = new Region(Selected[0].GetPath());
-                Region f2 = new Region(Selected[1].GetPath());
-                //Selected[0].GetPath().AddPath(Selected[1].GetPath(),false);
-                switch (TMOIndex)
-                {
-                    case 1: //xor
-                        f1.Intersect(Selected[1].GetPath());
-                        using (var tmoBrush = new SolidBrush(this.BackColor))
-                            e.Graphics.FillRegion(tmoBrush, f1);
-                        break;
-                    case 2: //subtract
-                        f1.Exclude(f2);
-                        using (var tmoBrush = new SolidBrush(this.BackColor))
-                        {
-                            e.Graphics.DrawPath(new Pen(this.BackColor), Selected[1].GetPath());
-                            e.Graphics.FillRegion(tmoBrush, f2);
-                        }
-                        break;
-                }
-                TMO = true;
+                DrawTMO(e.Graphics);
             }
 
         }
-
-        private void DrawCubeSpline(Pen drPen, List<PointF> P,Graphics e /*Point[] P*/)
+        public void DrawTMO(Graphics g)
         {
-            // Матрица вещественных коэффициентов L
-            PointF[] L = new PointF[4];
-
-            // Касательные векторы
-            PointF vector1 = P[0];
-            PointF vector2 = P[0];
-
-            const double dt = 0.04;
-            double t = 0;
-            double xt, yt;
-
-            PointF Ppred = P[0], Pt = P[0];
-
-            vector1.X = 4 * (P[1].X - P[0].X);
-            vector1.Y = 4 * (P[1].Y - P[0].Y);
-            vector2.X = 4 * (P[3].X - P[2].X);
-            vector2.Y = 4 * (P[3].Y - P[2].Y);
-
-            // Расчет коэффициентов полинома
-            L[0].X = 2 * P[0].X - 2 * P[2].X + vector1.X + vector2.X; // Ax
-            L[0].Y = 2 * P[0].Y - 2 * P[2].Y + vector1.Y + vector2.Y; // Ay
-            L[1].X = -3 * P[0].X + 3 * P[2].X - 2 * vector1.X - vector2.X; // Bx
-            L[1].Y = -3 * P[0].Y + 3 * P[2].Y - 2 * vector1.Y - vector2.Y; // By
-            L[2].X = vector1.X; // Cx
-            L[2].Y = vector1.Y; // Cy
-            L[3].X = P[0].X; // Dx
-            L[3].Y = P[0].Y; // Dy
-
-            while (t < 1 + dt / 2)
+            Region f1 = new Region(Selected[0].GetPath());
+            Region f2 = new Region(Selected[1].GetPath());
+            //Selected[0].GetPath().AddPath(Selected[1].GetPath(),false);
+            switch (TMOIndex)
             {
-                xt = ((L[0].X * t + L[1].X) * t + L[2].X) * t + L[3].X;
-                yt = ((L[0].Y * t + L[1].Y) * t + L[2].Y) * t + L[3].Y;
-
-                Pt.X = (int)Math.Round(xt);
-                Pt.Y = (int)Math.Round(yt);
-
-                e.DrawLine(drPen, Ppred, Pt);
-                Ppred = Pt;
-                t += dt;
+                case 1: //xor
+                    f1.Intersect(Selected[1].GetPath());
+                    using (var tmoBrush = new SolidBrush(this.BackColor))
+                        g.FillRegion(tmoBrush, f1);
+                    break;
+                case 2: //subtract
+                    f1.Exclude(f2);
+                    using (var tmoBrush = new SolidBrush(this.BackColor))
+                    {
+                        g.DrawPath(new Pen(this.BackColor), Selected[1].GetPath());
+                        g.FillRegion(tmoBrush, f2);
+                    }
+                    break;
             }
+            TMO = true;
         }
+        
         private void RotateBtn_Click(object sender, EventArgs e)
         {
             if (TMO == true)
@@ -414,18 +289,13 @@ namespace GSC_Lr4
             }
             else if (TMO ==false)
             {
-                Operation = 3; //rotate
+                //Operation = 3; //rotate
                 selectedShape.RotationAngle = 45 * rotateCount;
             }
             pictureBox1.Invalidate();
             rotateCount++;
         }
 
-        private void DeleteBtn_Click(object sender, EventArgs e)
-        {
-            Operation = 4; //delete
-            pictureBox1.Invalidate();
-        }
 
         private void ReflectBtn_Click(object sender, EventArgs e)
         {
@@ -445,6 +315,10 @@ namespace GSC_Lr4
             }
             pictureBox1.Invalidate();
         }
+        private void DrawComplexSelection()
+        {
+
+        }
 
         private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
         {
@@ -460,43 +334,34 @@ namespace GSC_Lr4
 
         private void ScaleBtn_Click(object sender, EventArgs e)
         {
-            Operation = 8;
-            Operation = 6;
-            pictureBox1.Invalidate();
+            if (TMO == true)
+            { Operation = 8; } //ПОД ВОПРОСОМ  
+            Operation = 6; pictureBox1.Invalidate();
         }
 
         private void clearBtn_Click(object sender, EventArgs e)
         {
-            Operation = 10;
-            Shapes.Clear();
-            Selected.Clear();
-            TMO = false;
+            Operation = 10; Shapes.Clear(); Selected.Clear();TMO = false;
             //selectedShape = null;
             pictureBox1.Invalidate();
         }
 
+        private void DeleteBtn_Click(object sender, EventArgs e)
+        { Operation = 4; pictureBox1.Invalidate(); } //delete 
 
         private void ExecuteTMO_Click(object sender, EventArgs e)
         {
             Operation = 8;
             foreach(var tmo in Shapes)
-            {
-                tmo.TMO = true;
-            }
-            pictureBox1.Invalidate();
+            { tmo.TMO = true; } pictureBox1.Invalidate();
         }
 
         private void TMO_Mode_CheckedChanged(object sender, EventArgs e)
         {
             if (TMO_Mode.Checked)
-            {
-                Operation = 7;
-            }
+            { Operation = 7;}
             if(TMO_Mode.Checked == false)
-            {
-                Operation = 1;
-                TMO = false;
-            }
+            {Operation = 1;TMO = false; Selected.Clear();}
         }
 
         private void TMOCmbBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -526,23 +391,11 @@ namespace GSC_Lr4
             {
                 selectedShape.ScalePoint = crossHair;
                 pictureBox1.Invalidate();
-                selectedShape.ScaleFactor += 0.7f;
+                selectedShape.ScaleFactor += 1f * scaleCount;
+                scaleCount+=0.002f;
                 // selectedShape = null;
             }
         }
-
-        private void splineBtn_Click(object sender, EventArgs e)
-        {
-            shapeType = 1; //spline 
-        }
-
-        private void segmentBtn_Click(object sender, EventArgs e)
-        {
-            shapeType = 2; //line segment
-            Operation = 1;
-
-        }
-
         private void MinimizeBtn_Click(object sender, EventArgs e)
         {
             if (TMO == false)
@@ -564,6 +417,7 @@ namespace GSC_Lr4
                 }
             }
         }
+
     }
 }
 
