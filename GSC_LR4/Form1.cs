@@ -391,10 +391,15 @@ namespace GSC_Lr4
             {
                 selectedShape.ScalePoint = crossHair;
                 pictureBox1.Invalidate();
-                selectedShape.ScaleFactor += 1f * scaleCount;
-                scaleCount+=0.002f;
-                // selectedShape = null;
+                //selectedShape.ScaleFactor += selectedShape.ScaleFactor * scaleCount; 
+                if (selectedShape.ScaleFactor < 1f)
+                {
+                    selectedShape.ScaleFactor = selectedShape.ScaleFactor * 0.2f+1;
+                }
+                else
+                { selectedShape.ScaleFactor += 1f * scaleCount; }
             }
+            scaleCount += 0.2f;
         }
         private void MinimizeBtn_Click(object sender, EventArgs e)
         {
@@ -402,7 +407,12 @@ namespace GSC_Lr4
             {
                 selectedShape.ScalePoint = crossHair;
                 pictureBox1.Invalidate();
-                selectedShape.ScaleFactor = 0.8f / scaleCount;
+                if (selectedShape.ScaleFactor > 1f)
+                {
+                    selectedShape.ScaleFactor = selectedShape.ScaleFactor / 2f;
+                }
+                else
+                { selectedShape.ScaleFactor = 0.8f / scaleCount; }
                 scaleCount += 0.5f;
             }
             

@@ -25,7 +25,7 @@ namespace GSC_LR4
        
         public Star(Color Color) // default 
         {
-            center = new PointF(150, 150);
+            center = new PointF(550, 350);
             oColor = Color;
             TMO = false;
         }

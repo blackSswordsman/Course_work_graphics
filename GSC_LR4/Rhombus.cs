@@ -24,7 +24,7 @@ namespace GSC_LR4
 
         public Rhombus(Color Color)
         {
-            center = new PointF(300, 300); // appears on surface (middle?) 
+            center = new PointF(400, 400); // appears on surface (middle?) 
             oColor = Color;
             TMO = false;
         }
